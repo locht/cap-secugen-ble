@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2017",
+    "lib": ["es2017", "dom", "dom.iterable", "es6"],
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist/esm",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "android", "ios"]
+}

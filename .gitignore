@@ -1,0 +1,30 @@
+# Dependencies
+/node_modules
+/secugen-demo/node_modules
+/secugen-demo/.angular
+/secugen-demo/www
+/secugen-demo/coverage
+
+# Build output
+/dist
+/www
+/coverage
+/android/build
+/ios/build
+/ios/App/public
+
+# IDE files
+.idea/
+.vscode/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Other
+.DS_Store
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

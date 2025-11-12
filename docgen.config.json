@@ -1,0 +1,5 @@
+{
+  "api": "SecuGenBLEPlugin",
+  "outputReadme": "README.md",
+  "outputJson": "dist/docs.json"
+}
