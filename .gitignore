@@ -2,6 +2,7 @@
 /node_modules
 /secugen-demo/node_modules
 /secugen-demo/.angular
+/secugen-demo/.vscode
 /secugen-demo/www
 /secugen-demo/coverage
 
