@@ -1,6 +1,6 @@
 {
   "name": "@myduchospital/cap-secugen-ble",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Capacitor plugin for SecuGen Unity 20 Bluetooth fingerprint scanner",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -11,7 +11,7 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "CapSecugenBle.podspec"
+    "MyduchospitalCapSecugenBle.podspec"
   ],
   "author": "MyDuc Hospital IT Team",
   "license": "MIT",
