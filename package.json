@@ -17,10 +17,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/myduchospital/cap-secugen-ble.git"
+    "url": "git+https://github.com/locht/cap-secugen-ble.git"
   },
   "bugs": {
-    "url": "https://github.com/myduchospital/cap-secugen-ble/issues"
+    "url": "https://github.com/locht/cap-secugen-ble/issues"
   },
   "keywords": [
     "capacitor",
