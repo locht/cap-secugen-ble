@@ -156,7 +156,7 @@
 }
 
 - (void)capture:(CAPPluginCall *)call {
-    NSLog(@"📸 Capture called");
+    // NSLog(@"📸 Capture called");
 
     if (!self.connectedPeripheral || !self.writeCharacteristic) {
         [call resolve:@{@"success": @NO, @"message": @"Device not connected"}];
@@ -601,7 +601,7 @@
                         self.total_receive_size = 0;
                         [self.ImageData setLength:0];
 
-                        NSLog(@"✅ Image incoming: %u bytes, WSQ: %@", dataSize, self.isWSQ ? @"YES" : @"NO");
+                        // NSLog(@"✅ Image incoming: %u bytes, WSQ: %@", dataSize, self.isWSQ ? @"YES" : @"NO");
 
                         // Start reading image data - NOTE: Only call ONCE
                         [self.connectedPeripheral readValueForCharacteristic:self.notifyCharacteristic];
@@ -612,7 +612,7 @@
                             @"progress": @0
                         }];
                     } else {
-                        NSLog(@"👆 Device ready - Place finger on sensor!");
+                        // NSLog(@"👆 Device ready - Place finger on sensor!");
                         [self notifyListeners:@"captureProgress" data:@{
                             @"status": @"ready",
                             @"message": @"Place finger on sensor"
