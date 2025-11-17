@@ -11,16 +11,12 @@
 
 // default
 #define PACKET_HEADER_SIZE          12
-#define TEMPLATE_SIZE_OF_SG400      400  // The SG400 format is SecuGen proprietary and is compatible with all SecuGen SDKs that support 400 byte templates.
-
-#define WSQ_BITRATE_5_TO_1          0x01 // It means 2.25. This is the high byte of param2 in the CMD_GET_IMAGE command, and the high byte of param1 should be set to 0x01.
-#define WSQ_BITRATE_15_TO_1         0x02 // It means 0.75. This is the high byte of param2 in the CMD_GET_IMAGE command, and the high byte of param1 should be set to 0x01.
+#define MAC_SET_FOR_BLUETOOTH       0x01
 
 // COMMAND
 #define CMD_GET_VERSION             0x05
-#define CMD_SET_SYSTEM_INFO         0x20
-#define CMD_GET_SYSTEM_INFO         0x30
-#define CMD_GET_TEMPLATE            0x40
+#define CMD_SET_SYSTEM_INFO_ALL     0x22
+#define CMD_GET_SYSTEM_INFO_ALL     0x23
 #define CMD_GET_IMAGE               0x43
 #define CMD_FP_REGISTER_START       0x50
 #define CMD_FP_REGISTER_END         0x51
@@ -34,17 +30,14 @@
 #define CMD_DB_GET_FIRSTREC         0x74
 #define CMD_DB_GET_NEXTREC          0x75
 #define CMD_DB_DELETE_ALL           0x76
-#define CMD_DB_GET_CURRENTREC       0x77
-#define CMD_DB_VERIFY               0x78
-#define CMD_DB_IDENTIFY             0x79
 #define CMD_FP_AUTO_IDENTIFY_START  0xA1
 #define CMD_FP_AUTO_IDENTIFY_STOP   0xA2
 #define CMD_FP_AUTO_IDENTIFY        0xA3
-#define CMD_INSTANT_VERIFY          0xD0
-#define CMD_REQUEST_CONNECT         0xF0
-#define CMD_SET_POWER_OFF_TIME      0xF7
-#define CMD_GET_MATCH_SCORE         0xF9
-#define CMD_LOAD_MATCH_TEMPLATE     0xFA
+#define CMD_FACTORY_RESET           0xEB    //H
+#define CMD_SET_SERIAL              0xF5    //H
+#define CMD_GET_SERIAL              0xF6    //H
+#define CMD_INVALID_COMMAND         0xFF    //H
+#define CMD_CANCEL_COMMAND          0xFE    //H
 
 //ERROR CODES
 typedef enum : uint8_t {

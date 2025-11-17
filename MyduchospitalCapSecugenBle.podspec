@@ -15,15 +15,12 @@ Pod::Spec.new do |s|
   s.dependency 'Capacitor'
   s.swift_version = '5.1'
   
-  # Use vendored framework instead of static library
-  s.vendored_frameworks = 'ios/Vendor/FMSProtocol.framework'
-  
-  # Framework search paths
+  # Sửa thành:
+  s.vendored_frameworks = 'ios/Plugin/Framework/release/FMSProtocol.framework'
+
+  # Option: chỉnh lại FRAMEWORK_SEARCH_PATHS / HEADER_SEARCH_PATHS cho gọn:
   s.xcconfig = {
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/../node_modules/@myduchospital/cap-secugen-ble/ios/Vendor',
-    'HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/../node_modules/@myduchospital/cap-secugen-ble/ios/Plugin'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/ios/Plugin/Framework/release',
+    'HEADER_SEARCH_PATHS'    => '$(inherited)'
   }
-  
-  # Public header files
-  s.public_header_files = 'ios/Plugin/**/*.h'
 end

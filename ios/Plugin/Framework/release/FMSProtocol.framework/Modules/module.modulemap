@@ -1,0 +1,6 @@
+framework module FMSProtocol {
+  umbrella header "FMSProtocol.h"
+
+  export *
+  module * { export * }
+}

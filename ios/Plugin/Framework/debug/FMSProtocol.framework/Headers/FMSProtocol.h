@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "FMSDefine.h"
+#import "FMSHeader.h"
 #import "FMSPacket.h"
 
 //! Project version number for FMSProtocol.
