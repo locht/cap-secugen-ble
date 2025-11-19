@@ -17,6 +17,7 @@ CAP_PLUGIN(SecuGenFingerprint, "SecuGenBLE",
            CAP_PLUGIN_METHOD(completeRegistration, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(verify, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(identify, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getTemplate, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(match, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(deleteFingerprint, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setPowerOffTime, CAPPluginReturnPromise);

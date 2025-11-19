@@ -5,6 +5,7 @@
 
 #import "SecuGenBLEPlugin.h"
 #import <FMSProtocol/FMSPacket.h>
+#import <FMSProtocol/FMSProtocol.h>
 
 // Match SDK packet header size for FMS protocol
 #define PACKET_HEADER_SIZE 12
@@ -253,23 +254,154 @@
 }
 
 - (void)getVersion:(CAPPluginCall *)call {
-    NSLog(@"getVersion called");
+    // NSLog(@"getVersion called");
+
+    if (!self.connectedPeripheral || !self.writeCharacteristic) {
+        [call resolve:@{ @"success": @NO, @"message": @"Device not connected" }];
+        return;
+    }
+
+    FMSPacket *packet = [[FMSPacket alloc] init];
+    uint8_t *valData = [packet getVersion];
+    NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
+
+    [self.connectedPeripheral writeValue:data
+                       forCharacteristic:self.writeCharacteristic
+                                    type:CBCharacteristicWriteWithResponse];
+
+    [call resolve:@{ @"success": @YES, @"message": @"get version" }];
 }
 
 - (void)register:(CAPPluginCall *)call {
-    NSLog(@"register called");
+    // NSLog(@"register called");
+
+    if (!self.connectedPeripheral || !self.writeCharacteristic) {
+        [call resolve:@{ @"success": @NO, @"message": @"Device not connected" }];
+        return;
+    }
+
+    NSNumber *userIdNumber = [call.options objectForKey:@"userID"];
+    if (!userIdNumber) {
+        [call resolve:@{ @"success": @NO, @"message": @"userID is required" }];
+        return;
+    }
+
+    uint16_t userID = (uint16_t)[userIdNumber unsignedIntegerValue];
+
+    FMSPacket *packet = [[FMSPacket alloc] init];
+    uint8_t *valData = [packet fpRegisterStartWithUserID:userID withMaster:0];
+    NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
+
+    [self.connectedPeripheral writeValue:data
+                       forCharacteristic:self.writeCharacteristic
+                                    type:CBCharacteristicWriteWithResponse];
+
+    [call resolve:@{ @"success": @YES, @"message": @"register start" }];
 }
 
 - (void)completeRegistration:(CAPPluginCall *)call {
-    NSLog(@"completeRegistration called");
+    // NSLog(@"completeRegistration called");
+
+    if (!self.connectedPeripheral || !self.writeCharacteristic) {
+        [call resolve:@{ @"success": @NO, @"message": @"Device not connected" }];
+        return;
+    }
+
+    FMSPacket *packet = [[FMSPacket alloc] init];
+    uint8_t *valData = [packet getPacketWithCommand:CMD_FP_REGISTER_END withParam1:0 withParam2:0 withDataSize:0];
+    NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
+
+    [self.connectedPeripheral writeValue:data
+                       forCharacteristic:self.writeCharacteristic
+                                    type:CBCharacteristicWriteWithResponse];
+
+    [call resolve:@{ @"success": @YES, @"message": @"register end" }];
 }
 
 - (void)verify:(CAPPluginCall *)call {
-    NSLog(@"verify called");
+    // NSLog(@"verify called");
+
+    if (!self.connectedPeripheral || !self.writeCharacteristic) {
+        [call resolve:@{ @"success": @NO, @"message": @"Device not connected" }];
+        return;
+    }
+
+    NSNumber *userIdNumber = [call.options objectForKey:@"userID"];
+    if (!userIdNumber) {
+        [call resolve:@{ @"success": @NO, @"message": @"userID is required" }];
+        return;
+    }
+
+    uint16_t userID = (uint16_t)[userIdNumber unsignedIntegerValue];
+
+    FMSPacket *packet = [[FMSPacket alloc] init];
+    uint8_t *valData = [packet fpVerifyWithUserID:userID];
+    NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
+
+    [self.connectedPeripheral writeValue:data
+                       forCharacteristic:self.writeCharacteristic
+                                    type:CBCharacteristicWriteWithResponse];
+
+    [call resolve:@{ @"success": @YES, @"message": @"verify" }];
 }
 
 - (void)identify:(CAPPluginCall *)call {
-    NSLog(@"identify called");
+    // NSLog(@"identify called");
+
+    if (!self.connectedPeripheral || !self.writeCharacteristic) {
+        [call resolve:@{ @"success": @NO, @"message": @"Device not connected" }];
+        return;
+    }
+
+    FMSPacket *packet = [[FMSPacket alloc] init];
+    uint8_t *valData = [packet fpIdentify];
+    NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
+
+    [self.connectedPeripheral writeValue:data
+                       forCharacteristic:self.writeCharacteristic
+                                    type:CBCharacteristicWriteWithResponse];
+
+    [call resolve:@{ @"success": @YES, @"message": @"identify" }];
+}
+
+- (void)getTemplate:(CAPPluginCall *)call {
+    // Request fingerprint template (CMD_GET_TEMPLATE = 0x40) and resolve with template data
+
+    if (!self.connectedPeripheral || !self.writeCharacteristic) {
+        [call resolve:@{ @"success": @NO, @"message": @"Device not connected" }];
+        return;
+    }
+
+    NSNumber *userIdNumber = [call.options objectForKey:@"userID"];
+    if (!userIdNumber) {
+        [call resolve:@{ @"success": @NO, @"message": @"userID is required" }];
+        return;
+    }
+
+    uint16_t userID = (uint16_t)[userIdNumber unsignedIntegerValue];
+
+    // Prepare buffer/state for template transfer (reuse ImageData)
+    if (!self.ImageData) {
+        self.ImageData = [[NSMutableData alloc] init];
+    }
+    [self.ImageData setLength:0];
+    self.remaining_data_size = 0;
+    self.total_receive_size = 0;
+    self.currentCommand = 0x40; // CMD_GET_TEMPLATE
+
+    // Remember call so we can resolve when template transfer completes
+    self.currentCall = call;
+
+    FMSPacket *packet = [[FMSPacket alloc] init];
+    uint8_t *valData = [packet getPacketWithCommand:0x40
+                                         withParam1:userID
+                                         withParam2:0
+                                       withDataSize:0];
+    NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
+
+    [self.connectedPeripheral writeValue:data
+                       forCharacteristic:self.writeCharacteristic
+                                    type:CBCharacteristicWriteWithResponse];
 }
 
 - (void)match:(CAPPluginCall *)call {
@@ -277,11 +409,34 @@
 }
 
 - (void)deleteFingerprint:(CAPPluginCall *)call {
-    NSLog(@"deleteFingerprint called");
+    // NSLog(@"deleteFingerprint called");
+
+    if (!self.connectedPeripheral || !self.writeCharacteristic) {
+        [call resolve:@{ @"success": @NO, @"message": @"Device not connected" }];
+        return;
+    }
+
+    NSNumber *userIdNumber = [call.options objectForKey:@"userID"];
+    if (!userIdNumber) {
+        [call resolve:@{ @"success": @NO, @"message": @"userID is required" }];
+        return;
+    }
+
+    uint16_t userID = (uint16_t)[userIdNumber unsignedIntegerValue];
+
+    FMSPacket *packet = [[FMSPacket alloc] init];
+    uint8_t *valData = [packet fpDeleteWithUserID:userID];
+    NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
+
+    [self.connectedPeripheral writeValue:data
+                       forCharacteristic:self.writeCharacteristic
+                                    type:CBCharacteristicWriteWithResponse];
+
+    [call resolve:@{ @"success": @YES, @"message": @"delete user" }];
 }
 
 - (void)setPowerOffTime:(CAPPluginCall *)call {
-    NSLog(@"⚡ setPowerOffTime called");
+    // NSLog(@"⚡ setPowerOffTime called");
     
     NSNumber *timeoutMinutes = [call.options objectForKey:@"timeoutMinutes"] ?: @30;
     
@@ -347,7 +502,7 @@
             break;
     }
 
-    NSLog(@"🔵 Bluetooth state: %@ (enabled: %@)", stateString, isEnabled ? @"YES" : @"NO");
+    // NSLog(@"🔵 Bluetooth state: %@ (enabled: %@)", stateString, isEnabled ? @"YES" : @"NO");
 
     // Notify listeners about state change
     [self notifyListeners:@"connectionStateChange" data:@{
@@ -364,7 +519,7 @@
     NSString *deviceName = peripheral.name ?: @"Unknown Device";
     NSString *localName = advertisementData[CBAdvertisementDataLocalNameKey] ?: @"";
 
-    NSLog(@"🔍 Discovered device: %@ (RSSI: %@)", deviceName, RSSI);
+    // NSLog(@"🔍 Discovered device: %@ (RSSI: %@)", deviceName, RSSI);
 
     // Check for SecuGen Unity 20 devices (like React Native version)
     BOOL isSecuGenDevice = NO;
@@ -397,7 +552,7 @@
         };
 
         [self notifyListeners:@"deviceFound" data:deviceInfo];
-        NSLog(@"🔍 Device found event sent: %@ (SecuGen: %@)", deviceName, isSecuGenDevice ? @"YES" : @"NO");
+        // NSLog(@"🔍 Device found event sent: %@ (SecuGen: %@)", deviceName, isSecuGenDevice ? @"YES" : @"NO");
     }
 }
 
@@ -523,14 +678,14 @@
     uint8_t b7 = receiveData.length > 7 ? byte[7] : 0;
     uint8_t b8 = receiveData.length > 8 ? byte[8] : 0;
     uint8_t b9 = receiveData.length > 9 ? byte[9] : 0;
-    NSLog(@"BLE packet: len=%lu, b0=0x%02X, b1=0x%02X, b5=0x%02X, b6-9=%02X %02X %02X %02X",
-          (unsigned long)receiveData.length, b0, b1, b5, b6, b7, b8, b9);
+    // NSLog(@"BLE packet: len=%lu, b0=0x%02X, b1=0x%02X, b5=0x%02X, b6-9=%02X %02X %02X %02X",
+    //       (unsigned long)receiveData.length, b0, b1, b5, b6, b7, b8, b9);
 
     // 1) SDK: notify packet from device ('n')
     // IMPORTANT: Do NOT treat 'N' (0x4E) as notify, because FMS headers also start with 'N''C'.
     // Only lowercase 'n' (0x6E) should be treated as a pure notify trigger.
     if (receiveData.length == PACKET_HEADER_SIZE && byte[0] == 'n') {
-        NSLog(@"A notify has occurred in characteristic: %@", characteristic.UUID);
+        // NSLog(@"A notify has occurred in characteristic: %@", characteristic.UUID);
         // Trigger read of actual data, like SDK's devReadCharacteristic
         if (self.connectedPeripheral && self.notifyCharacteristic) {
             [self.connectedPeripheral readValueForCharacteristic:self.notifyCharacteristic];
@@ -590,7 +745,6 @@
             {
                 if (error == 0x00) {
                     // MANUAL parse of extended data size: bytes[6..9] little-endian
-                    // Header bytes from log: b6-9=ED 09 00 00 => 0x000009ED = 2541 bytes
                     uint32_t dataSize = (uint32_t)(bytes[6]
                                                   | (bytes[7] << 8)
                                                   | (bytes[8] << 16)
@@ -601,8 +755,6 @@
                         self.total_receive_size = 0;
                         [self.ImageData setLength:0];
 
-                        // NSLog(@"✅ Image incoming: %u bytes, WSQ: %@", dataSize, self.isWSQ ? @"YES" : @"NO");
-
                         // Start reading image data - NOTE: Only call ONCE
                         [self.connectedPeripheral readValueForCharacteristic:self.notifyCharacteristic];
 
@@ -612,7 +764,6 @@
                             @"progress": @0
                         }];
                     } else {
-                        // NSLog(@"👆 Device ready - Place finger on sensor!");
                         [self notifyListeners:@"captureProgress" data:@{
                             @"status": @"ready",
                             @"message": @"Place finger on sensor"
@@ -625,16 +776,50 @@
                         @"message": [NSString stringWithFormat:@"Capture failed (Error: 0x%02X)", error]
                     }];
                 }
-                //     }
-                // } else {
-                //     // NSLog(@"❌ Capture failed with Error: 0x%02X", error);
-                //     [self notifyListeners:@"captureProgress" data:@{
-                //         @"status": @"error",
-                //         @"message": [NSString stringWithFormat:@"Capture failed (Error: 0x%02X)", error]
-                //     }];
-                // }
             }
             break;
+
+        case 0x40: // CMD_GET_TEMPLATE
+            {
+                if (error == 0x00) {
+                    // Extended data size for template (usually small, e.g. 400 bytes)
+                    uint32_t dataSize = (uint32_t)(bytes[6]
+                                                  | (bytes[7] << 8)
+                                                  | (bytes[8] << 16)
+                                                  | (bytes[9] << 24));
+
+                    if (dataSize > 0 && dataSize < 4096) {
+                        self.remaining_data_size = (int)dataSize;
+                        self.total_receive_size = 0;
+                        if (!self.ImageData) {
+                            self.ImageData = [[NSMutableData alloc] init];
+                        }
+                        [self.ImageData setLength:0];
+
+                        if (self.connectedPeripheral && self.notifyCharacteristic) {
+                            [self.connectedPeripheral readValueForCharacteristic:self.notifyCharacteristic];
+                        }
+                    } else {
+                        if (self.currentCall) {
+                            [self.currentCall resolve:@{
+                                @"success": @NO,
+                                @"message": @"Invalid template data size"
+                            }];
+                            self.currentCall = nil;
+                        }
+                    }
+                } else {
+                    if (self.currentCall) {
+                        [self.currentCall resolve:@{
+                            @"success": @NO,
+                            @"message": [NSString stringWithFormat:@"Get template failed (Error: 0x%02X)", error]
+                        }];
+                        self.currentCall = nil;
+                    }
+                }
+            }
+            break;
+
         default:
             // NSLog(@"🔥 Other command: 0x%02X", command);
             break;
@@ -680,21 +865,34 @@
     // }
 
     if (imageData.length != 0) {
-        if (self.currentCommand == 0x43) { // CMD_GET_IMAGE
-            // Append image data
+        if (self.currentCommand == 0x43 || self.currentCommand == 0x40) {
+            // Append extended data (image or template)
             [self.ImageData appendBytes:[imageData bytes] length:[imageData length]];
-
-            // Verbose per-chunk logging to help debug incomplete captures
-            // NSLog(@"📡 Chunk received: %lu bytes, total_received: %d, remaining_expected: %d", (unsigned long)imageData.length, self.total_receive_size, self.remaining_data_size);
         }
     }
 
     // Continue reading if more data expected
     if (self.remaining_data_size > 0) {
-        [self.connectedPeripheral readValueForCharacteristic:self.notifyCharacteristic];
+        if (self.connectedPeripheral && self.notifyCharacteristic) {
+            [self.connectedPeripheral readValueForCharacteristic:self.notifyCharacteristic];
+        }
     } else {
-        // Image complete - process it
-        [self processCompleteImage];
+        // Transfer complete - branch by current command
+        if (self.currentCommand == 0x43) {
+            [self processCompleteImage];
+        } else if (self.currentCommand == 0x40) {
+            NSData *templateData = [self.ImageData copy];
+            NSString *templateBase64 = [templateData base64EncodedStringWithOptions:0];
+
+            if (self.currentCall) {
+                [self.currentCall resolve:@{
+                    @"success": @YES,
+                    @"template": templateBase64,
+                    @"size": @(templateData.length)
+                }];
+                self.currentCall = nil;
+            }
+        }
     }
 }
 
