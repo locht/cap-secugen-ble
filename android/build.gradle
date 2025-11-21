@@ -49,6 +49,7 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    // implementation files('../../SDK/FDX_SDK_PRO_FD_Android_Studio_4_22/FDxSDKProFDAndroid.jar')
     implementation project(':capacitor-android')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     testImplementation "junit:junit:$junitVersion"

@@ -39,6 +39,12 @@ import com.secugen.fmssdk.FMSHeader;
 import com.secugen.fmssdk.FMSData;
 import com.secugen.u20_bt_android_ble_demo.DeviceControlActivity;
 
+import android.hardware.usb.UsbManager;
+
+import SecuGen.FDxSDKPro.JSGFPLib;
+import SecuGen.FDxSDKPro.SGFDxErrorCode;
+import SecuGen.FDxSDKPro.SGFDxSecurityLevel;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -107,6 +113,9 @@ public class SecuGenBLEPlugin extends Plugin {
     
     // Scan results
     private List<BluetoothDevice> scannedDevices = new ArrayList<>();
+
+    // FDxSDKPro matching library (used for template matching on Android)
+    private JSGFPLib sgfplibMatcher;
 
     @Override
     public void load() {
@@ -494,6 +503,125 @@ public class SecuGenBLEPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void matchTemplates(PluginCall call) {
+        JSObject result = new JSObject();
+
+        String probeBase64 = call.getString("probeTemplate");
+        JSArray candidatesArray = call.getArray("candidates");
+        int threshold = call.getInt("threshold", 80);
+
+        if (probeBase64 == null || probeBase64.isEmpty()) {
+            call.reject("probeTemplate is required");
+            return;
+        }
+        if (candidatesArray == null || candidatesArray.length() == 0) {
+            call.reject("candidates array is required");
+            return;
+        }
+
+        if (!initializeMatcher()) {
+            call.reject("FDxSDKPro matcher initialization failed");
+            return;
+        }
+
+        byte[] probeTemplate;
+        try {
+            probeTemplate = Base64.decode(probeBase64, Base64.DEFAULT);
+        } catch (IllegalArgumentException e) {
+            call.reject("Invalid base64 for probeTemplate");
+            return;
+        }
+
+        int bestScore = -1;
+        Object bestUserId = null;
+
+        JSArray scoresArray = new JSArray();
+
+        for (int i = 0; i < candidatesArray.length(); i++) {
+            Object item = candidatesArray.opt(i);
+            if (!(item instanceof JSObject)) {
+                continue;
+            }
+
+            JSObject candidate = (JSObject) item;
+            Object userId = candidate.opt("id");
+            String templateBase64 = candidate.optString("template", null);
+
+            if (templateBase64 == null || templateBase64.isEmpty()) {
+                continue;
+            }
+
+            byte[] candidateTemplate;
+            try {
+                candidateTemplate = Base64.decode(templateBase64, Base64.DEFAULT);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+
+            boolean[] matchedFlag = new boolean[1];
+            int[] scoreHolder = new int[1];
+
+            long matchError = sgfplibMatcher.MatchTemplate(probeTemplate, candidateTemplate,
+                    SGFDxSecurityLevel.SL_NORMAL, matchedFlag);
+            if (matchError != SGFDxErrorCode.SGFDX_ERROR_NONE) {
+                continue;
+            }
+
+            long scoreError = sgfplibMatcher.GetMatchingScore(probeTemplate, candidateTemplate, scoreHolder);
+            if (scoreError != SGFDxErrorCode.SGFDX_ERROR_NONE) {
+                continue;
+            }
+
+            int score = scoreHolder[0];
+
+            JSObject scoreEntry = new JSObject();
+            scoreEntry.put("id", userId);
+            scoreEntry.put("score", score);
+            scoresArray.put(scoreEntry);
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestUserId = userId;
+            }
+        }
+
+        boolean matched = bestScore >= threshold && bestUserId != null;
+
+        result.put("success", true);
+        result.put("matched", matched);
+        result.put("bestUserId", bestUserId);
+        result.put("bestScore", bestScore);
+        result.put("threshold", threshold);
+        result.put("scores", scoresArray);
+
+        call.resolve(result);
+    }
+
+    private boolean initializeMatcher() {
+        if (sgfplibMatcher != null) {
+            return true;
+        }
+
+        try {
+            UsbManager usbManager = (UsbManager) getContext().getSystemService(Context.USB_SERVICE);
+            sgfplibMatcher = new JSGFPLib(getContext(), usbManager);
+
+            long initResult = sgfplibMatcher.Init(SecuGen.FDxSDKPro.SGFDxDeviceName.SG_DEV_AUTO);
+            if (initResult != SGFDxErrorCode.SGFDX_ERROR_NONE) {
+                Log.e(TAG, "JSGFPLib Init failed: " + initResult);
+                sgfplibMatcher = null;
+                return false;
+            }
+
+            return true;
+        } catch (Throwable t) {
+            Log.e(TAG, "Failed to initialize JSGFPLib matcher", t);
+            sgfplibMatcher = null;
+            return false;
+        }
+    }
+
+    @PluginMethod
     public void identify(PluginCall call) {
         if (!isConnected) {
             call.reject("Device not connected");
@@ -509,6 +637,59 @@ public class SecuGenBLEPlugin extends Plugin {
     @PluginMethod
     public void match(PluginCall call) {
         // Implement match using VERIFY command, exposing userID and score
+        // New behavior: if probeTemplate and candidateTemplate are provided,
+        // perform 1-1 template matching locally using FDxSDKPro instead of device DB.
+        String probeBase64 = call.getString("probeTemplate");
+        String candidateBase64 = call.getString("candidateTemplate");
+
+        if (probeBase64 != null && candidateBase64 != null
+                && !probeBase64.isEmpty() && !candidateBase64.isEmpty()) {
+            if (!initializeMatcher()) {
+                call.reject("FDxSDKPro matcher initialization failed");
+                return;
+            }
+
+            byte[] probeTemplate;
+            byte[] candidateTemplate;
+            try {
+                probeTemplate = Base64.decode(probeBase64, Base64.DEFAULT);
+                candidateTemplate = Base64.decode(candidateBase64, Base64.DEFAULT);
+            } catch (IllegalArgumentException e) {
+                call.reject("Invalid base64 template data");
+                return;
+            }
+
+            int threshold = call.getInt("threshold", 80);
+
+            boolean[] matchedFlag = new boolean[1];
+            int[] scoreHolder = new int[1];
+
+            long matchError = sgfplibMatcher.MatchTemplate(probeTemplate, candidateTemplate,
+                    SGFDxSecurityLevel.SL_NORMAL, matchedFlag);
+            if (matchError != SGFDxErrorCode.SGFDX_ERROR_NONE) {
+                call.reject("MatchTemplate failed with error: " + matchError);
+                return;
+            }
+
+            long scoreError = sgfplibMatcher.GetMatchingScore(probeTemplate, candidateTemplate, scoreHolder);
+            if (scoreError != SGFDxErrorCode.SGFDX_ERROR_NONE) {
+                call.reject("GetMatchingScore failed with error: " + scoreError);
+                return;
+            }
+
+            int score = scoreHolder[0];
+            boolean matched = score >= threshold && matchedFlag[0];
+
+            JSObject result = new JSObject();
+            result.put("success", true);
+            result.put("matched", matched);
+            result.put("score", score);
+            result.put("threshold", threshold);
+
+            call.resolve(result);
+            return;
+        }
+
         if (!isConnected) {
             call.reject("Device not connected");
             return;
