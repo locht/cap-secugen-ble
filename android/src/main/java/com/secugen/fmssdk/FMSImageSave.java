@@ -3,7 +3,8 @@ package com.secugen.fmssdk;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
-import android.support.annotation.NonNull;
+// import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import java.io.File;

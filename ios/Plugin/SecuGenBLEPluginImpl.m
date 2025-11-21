@@ -149,11 +149,39 @@
 }
 
 - (void)disconnect:(CAPPluginCall *)call {
-    NSLog(@"disconnect called");
+    // NSLog(@"🔌 Disconnect called");
+
+    if (!self.centralManager) {
+        self.centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+    }
+
+    if (!self.connectedPeripheral || !self.isConnected) {
+        // Already disconnected or no peripheral
+        [call resolve:@{ @"success": @YES, @"message": @"No active connection" }];
+        return;
+    }
+
+    // Request disconnection; result will be reported asynchronously via
+    // centralManager:didDisconnectPeripheral:error:
+    [self.centralManager cancelPeripheralConnection:self.connectedPeripheral];
+
+    // Optimistically clear local state so JS knows we're disconnecting
+    self.isConnected = NO;
+    self.writeCharacteristic = nil;
+    self.notifyCharacteristic = nil;
+    self.connectedPeripheral = nil;
+
+    // Also notify listeners immediately
+    [self notifyListeners:@"connectionStateChange" data:@{ @"connected": @NO }];
+
+    [call resolve:@{ @"success": @YES, @"message": @"Device disconnect initiated" }];
 }
 
 - (void)isConnected:(CAPPluginCall *)call {
-    NSLog(@"isConnected called");
+    // NSLog(@"🔗 isConnected called");
+
+    BOOL connected = self.isConnected && self.connectedPeripheral != nil;
+    [call resolve:@{ @"connected": @(connected) }];
 }
 
 - (void)capture:(CAPPluginCall *)call {
@@ -292,11 +320,13 @@
     uint8_t *valData = [packet fpRegisterStartWithUserID:userID withMaster:0];
     NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
 
+    // Store current call so we can resolve when command response arrives
+    self.currentCall = call;
+
     [self.connectedPeripheral writeValue:data
                        forCharacteristic:self.writeCharacteristic
                                     type:CBCharacteristicWriteWithResponse];
-
-    [call resolve:@{ @"success": @YES, @"message": @"register start" }];
+                                    
 }
 
 - (void)completeRegistration:(CAPPluginCall *)call {
@@ -311,11 +341,12 @@
     uint8_t *valData = [packet getPacketWithCommand:CMD_FP_REGISTER_END withParam1:0 withParam2:0 withDataSize:0];
     NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
 
+    // Store current call so we can resolve when command response arrives
+    self.currentCall = call;
+
     [self.connectedPeripheral writeValue:data
                        forCharacteristic:self.writeCharacteristic
                                     type:CBCharacteristicWriteWithResponse];
-
-    [call resolve:@{ @"success": @YES, @"message": @"register end" }];
 }
 
 - (void)verify:(CAPPluginCall *)call {
@@ -338,11 +369,12 @@
     uint8_t *valData = [packet fpVerifyWithUserID:userID];
     NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
 
+    // Store current call so we can resolve when command response arrives
+    self.currentCall = call;
+
     [self.connectedPeripheral writeValue:data
                        forCharacteristic:self.writeCharacteristic
                                     type:CBCharacteristicWriteWithResponse];
-
-    [call resolve:@{ @"success": @YES, @"message": @"verify" }];
 }
 
 - (void)identify:(CAPPluginCall *)call {
@@ -357,11 +389,12 @@
     uint8_t *valData = [packet fpIdentify];
     NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
 
+    // Store current call so we can resolve when command response arrives
+    self.currentCall = call;
+
     [self.connectedPeripheral writeValue:data
                        forCharacteristic:self.writeCharacteristic
                                     type:CBCharacteristicWriteWithResponse];
-
-    [call resolve:@{ @"success": @YES, @"message": @"identify" }];
 }
 
 - (void)getTemplate:(CAPPluginCall *)call {
@@ -405,7 +438,32 @@
 }
 
 - (void)match:(CAPPluginCall *)call {
-    NSLog(@"match called");
+    // Match is implemented by reusing the VERIFY command, but we expose
+    // userID and score explicitly to JS.
+
+    if (!self.connectedPeripheral || !self.writeCharacteristic) {
+        [call resolve:@{ @"success": @NO, @"message": @"Device not connected" }];
+        return;
+    }
+
+    NSNumber *userIdNumber = [call.options objectForKey:@"userID"];
+    if (!userIdNumber) {
+        [call resolve:@{ @"success": @NO, @"message": @"userID is required" }];
+        return;
+    }
+
+    uint16_t userID = (uint16_t)[userIdNumber unsignedIntegerValue];
+
+    FMSPacket *packet = [[FMSPacket alloc] init];
+    uint8_t *valData = [packet fpVerifyWithUserID:userID];
+    NSData *data = [NSData dataWithBytes:valData length:PACKET_HEADER_SIZE];
+
+    // Store current call so we can resolve when command response arrives
+    self.currentCall = call;
+
+    [self.connectedPeripheral writeValue:data
+                       forCharacteristic:self.writeCharacteristic
+                                    type:CBCharacteristicWriteWithResponse];
 }
 
 - (void)deleteFingerprint:(CAPPluginCall *)call {
@@ -467,13 +525,13 @@
         @"message": [NSString stringWithFormat:@"Power off time set to %@ minutes", timeoutMinutes]
     }];
     
-    NSLog(@"📤 Power off time command sent: %@ minutes", timeoutMinutes);
+    // NSLog(@"📤 Power off time command sent: %@ minutes", timeoutMinutes);
 }
 
 #pragma mark - CBCentralManagerDelegate
 
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central {
-    NSLog(@"🔵 Bluetooth state updated: %ld", (long)central.state);
+    // NSLog(@"🔵 Bluetooth state updated: %ld", (long)central.state);
 
     // Notify JS about state change like React Native does
     NSString *stateString = @"unknown";
@@ -731,7 +789,17 @@
 
     // Parse command and error (like React Native version)
     uint16_t command = bytes[1]; // Command is at byte 1
-    uint8_t error = bytes[4];   // Error code is at byte 4
+    // sgPacket layout (FMSDefine.h):
+    // 0: pkt_class
+    // 1: pkt_command
+    // 2-3: pkt_param1
+    // 4-5: pkt_param2
+    // 6-7: pkt_datasize1
+    // 8-9: pkt_datasize2
+    // 10: pkt_error
+    // 11: pkt_checksum
+    // => Error thực sự nằm ở byte 10
+    uint8_t error = bytes[10];
             // ⚡ PERFORMANCE: Removed NSLog here - NSLog adds 1-3ms per chunk = 200-500ms total overhead
             // NSLog is one of the slowest operations in iOS; with 166 chunks, logging cuts throughput significantly
             // Uncomment below ONLY for debugging, not for production:
@@ -775,6 +843,117 @@
                         @"status": @"error",
                         @"message": [NSString stringWithFormat:@"Capture failed (Error: 0x%02X)", error]
                     }];
+                }
+            }
+            break;
+
+        case 0x50: // CMD_FP_REGISTER_START: // 0x50
+            {
+                if (self.currentCall) {
+                    if (error == ERR_NONE) {
+                        [self.currentCall resolve:@{
+                            @"success": @YES,
+                            @"message": @"Fingerprint registration started"
+                        }];
+                    } else {
+                        [self.currentCall resolve:@{
+                            @"success": @NO,
+                            @"message": [NSString stringWithFormat:@"Register start failed (Error: 0x%02X)", error]
+                        }];
+                    }
+                    self.currentCall = nil;
+                }
+            }
+            break;
+
+        case 0x56: // CMD_FP_IDENTIFY: // 0x56
+            {
+                if (self.currentCall) {
+                    // Extract userID and score from params (little-endian)
+                    uint16_t userID = (uint16_t)(bytes[2] | (bytes[3] << 8));
+                    uint16_t score  = (uint16_t)(bytes[4] | (bytes[5] << 8));
+
+                    if (error == ERR_NONE) {
+                        [self.currentCall resolve:@{
+                            @"success": @YES,
+                            @"message": [NSString stringWithFormat:@"Identify success - user %04X, score %d", userID, score]
+                        }];
+                    } else if (error == ERR_IDENTIFY_FAILED) {
+                        [self.currentCall resolve:@{
+                            @"success": @NO,
+                            @"message": @"Identify failed: no matching user"
+                        }];
+                    } else if (error == ERR_USER_NOT_FOUND) {
+                        [self.currentCall resolve:@{
+                            @"success": @NO,
+                            @"message": @"Identify failed: user not found"
+                        }];
+                    } else {
+                        [self.currentCall resolve:@{
+                            @"success": @NO,
+                            @"message": [NSString stringWithFormat:@"Identify failed (Error: 0x%02X)", error]
+                        }];
+                    }
+                    self.currentCall = nil;
+                }
+            }
+            break;
+
+        case 0x51: // CMD_FP_REGISTER_END: // 0x51
+            {
+                if (self.currentCall) {
+                    if (error == ERR_NONE) {
+                        [self.currentCall resolve:@{
+                            @"success": @YES,
+                            @"message": @"Fingerprint registration completed"
+                        }];
+                    } else {
+                        [self.currentCall resolve:@{
+                            @"success": @NO,
+                            @"message": [NSString stringWithFormat:@"Register end failed (Error: 0x%02X)", error]
+                        }];
+                    }
+                    self.currentCall = nil;
+                }
+            }
+            break;
+
+        case 0x55: // CMD_FP_VERIFY: // 0x55
+            {
+                if (self.currentCall) {
+                    // Extract userID and score from params (little-endian)
+                    uint16_t userID = (uint16_t)(bytes[2] | (bytes[3] << 8));
+                    uint16_t score  = (uint16_t)(bytes[4] | (bytes[5] << 8));
+
+                    if (error == ERR_NONE) {
+                        [self.currentCall resolve:@{
+                            @"success": @YES,
+                            @"message": @"Fingerprint verification success",
+                            @"userID": @(userID),
+                            @"score": @(score)
+                        }];
+                    } else if (error == ERR_VERIFY_FAILED) {
+                        [self.currentCall resolve:@{
+                            @"success": @NO,
+                            @"message": @"Fingerprint verification failed",
+                            @"userID": @(userID),
+                            @"score": @(score)
+                        }];
+                    } else if (error == ERR_USER_NOT_FOUND) {
+                        [self.currentCall resolve:@{
+                            @"success": @NO,
+                            @"message": @"User not found for verification",
+                            @"userID": @(userID)
+                        }];
+                    } else {
+                        [self.currentCall resolve:@{
+                            @"success": @NO,
+                            @"message": [NSString stringWithFormat:@"Fingerprint verification failed (Error: 0x%02X)", error],
+                            @"userID": @(userID),
+                            @"score": @(score)
+                        }];
+                    }
+                    self.currentCall = nil;
                 }
             }
             break;
