@@ -1,0 +1,115 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Image Viewer </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Fingerprint Image Viewer</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="container">
+    <!-- Display captured image -->
+    <ion-card *ngIf="lastCapture">
+      <ion-card-header>
+        <ion-card-title>Captured Image</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <canvas
+          #originalCanvas
+          style="border: 1px solid #ccc; width: 100%; max-width: 300px; display: block; margin: 10px auto"
+        ></canvas>
+
+        <!-- Image info -->
+        <div class="image-info">
+          <p><strong>Size:</strong> {{lastCapture.width}}×{{lastCapture.height}} pixels</p>
+          <p><strong>Data:</strong> {{lastCapture.size}} bytes</p>
+          <p><strong>WSQ Format:</strong> {{lastCapture.isWSQ ? 'Yes' : 'No'}}</p>
+        </div>
+
+        <!-- Enhancement buttons -->
+        <div class="button-group">
+          <ion-button (click)="enhanceImageContrast()" [disabled]="isEnhanced" expand="block" color="primary">
+            <ion-icon name="contrast" slot="start"></ion-icon>
+            Enhance Contrast
+          </ion-button>
+          <ion-button (click)="resetEnhancement()" [disabled]="!isEnhanced" expand="block" color="secondary">
+            <ion-icon name="refresh" slot="start"></ion-icon>
+            Reset
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Image statistics -->
+    <ion-card *ngIf="imageStats">
+      <ion-card-header>
+        <ion-card-title>Image Quality</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">Min Brightness</span>
+            <span class="stat-value">{{imageStats.min}}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Max Brightness</span>
+            <span class="stat-value">{{imageStats.max}}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Mean Brightness</span>
+            <span class="stat-value">{{imageStats.mean | number:'1.0-2'}}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Median Brightness</span>
+            <span class="stat-value">{{imageStats.median}}</span>
+          </div>
+        </div>
+
+        <!-- Quality assessment -->
+        <div class="quality-assessment">
+          <ion-badge *ngIf="imageStats.mean > 100 && (imageStats.max - imageStats.min) > 50" color="success">
+            <ion-icon name="checkmark-circle"></ion-icon> Good Quality
+          </ion-badge>
+          <ion-badge *ngIf="imageStats.mean <= 100" color="warning">
+            <ion-icon name="warning"></ion-icon> Too Dark
+          </ion-badge>
+          <ion-badge *ngIf="(imageStats.max - imageStats.min) <= 50" color="warning">
+            <ion-icon name="warning"></ion-icon> Low Contrast
+          </ion-badge>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Scaled display -->
+    <ion-card *ngIf="lastCapture">
+      <ion-card-header>
+        <ion-card-title>Scaled Preview (100×150)</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div style="text-align: center">
+          <canvas
+            #scaledCanvas
+            style="border: 1px solid #0088cc; max-width: 150px; image-rendering: crisp-edges"
+          ></canvas>
+          <p style="font-size: 12px; color: #666; margin-top: 10px">Canvas scaled version for thumbnail display</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Empty state -->
+    <ion-card *ngIf="!lastCapture">
+      <ion-card-header>
+        <ion-card-title>No Image</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p style="text-align: center; color: #999">
+          📸 Capture a fingerprint image from Tab 1 to see it displayed here with quality metrics.
+        </p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

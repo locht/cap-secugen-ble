@@ -1,0 +1,7 @@
+{
+  "name": "secugen-demo",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

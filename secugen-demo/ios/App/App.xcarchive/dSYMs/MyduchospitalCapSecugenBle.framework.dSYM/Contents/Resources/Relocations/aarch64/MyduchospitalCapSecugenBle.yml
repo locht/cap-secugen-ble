@@ -1,0 +1,161 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/it/Library/Developer/Xcode/DerivedData/App-bqoknpxapfsfbadkoxfjtwaajzde/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/MyduchospitalCapSecugenBle.framework/MyduchospitalCapSecugenBle'
+relocations:
+  - { offset: 0x85B3A, size: 0x8, addend: 0x0, symName: _MyduchospitalCapSecugenBleVersionString, symObjAddr: 0x0, symBinAddr: 0x9240, symSize: 0x0 }
+  - { offset: 0x85B6F, size: 0x8, addend: 0x0, symName: _MyduchospitalCapSecugenBleVersionNumber, symObjAddr: 0x38, symBinAddr: 0x9278, symSize: 0x0 }
+  - { offset: 0x85BAC, size: 0x8, addend: 0x0, symName: '-[FMSHeader init]', symObjAddr: 0x0, symBinAddr: 0x4000, symSize: 0x50 }
+  - { offset: 0x85BBA, size: 0x8, addend: 0x0, symName: '-[FMSHeader getHeader]', symObjAddr: 0x118, symBinAddr: 0x4118, symSize: 0x34 }
+  - { offset: 0x85BE4, size: 0x8, addend: 0x0, symName: _getHeader.headerBytes, symObjAddr: 0x3132, symBinAddr: 0x15528, symSize: 0x0 }
+  - { offset: 0x85CE6, size: 0x8, addend: 0x0, symName: '-[FMSHeader init]', symObjAddr: 0x0, symBinAddr: 0x4000, symSize: 0x50 }
+  - { offset: 0x85D1D, size: 0x8, addend: 0x0, symName: '-[FMSHeader initWithPacket:]', symObjAddr: 0x50, symBinAddr: 0x4050, symSize: 0x58 }
+  - { offset: 0x85D64, size: 0x8, addend: 0x0, symName: '-[FMSHeader getClass]', symObjAddr: 0xA8, symBinAddr: 0x40A8, symSize: 0x8 }
+  - { offset: 0x85D9B, size: 0x8, addend: 0x0, symName: '-[FMSHeader getCommand]', symObjAddr: 0xB0, symBinAddr: 0x40B0, symSize: 0x8 }
+  - { offset: 0x85DD2, size: 0x8, addend: 0x0, symName: '-[FMSHeader getParam1]', symObjAddr: 0xB8, symBinAddr: 0x40B8, symSize: 0x8 }
+  - { offset: 0x85E09, size: 0x8, addend: 0x0, symName: '-[FMSHeader getParam2]', symObjAddr: 0xC0, symBinAddr: 0x40C0, symSize: 0x8 }
+  - { offset: 0x85E40, size: 0x8, addend: 0x0, symName: '-[FMSHeader getDataSize1]', symObjAddr: 0xC8, symBinAddr: 0x40C8, symSize: 0x8 }
+  - { offset: 0x85E77, size: 0x8, addend: 0x0, symName: '-[FMSHeader getDataSize2]', symObjAddr: 0xD0, symBinAddr: 0x40D0, symSize: 0x8 }
+  - { offset: 0x85EAE, size: 0x8, addend: 0x0, symName: '-[FMSHeader getError]', symObjAddr: 0xD8, symBinAddr: 0x40D8, symSize: 0x8 }
+  - { offset: 0x85EE5, size: 0x8, addend: 0x0, symName: '-[FMSHeader getCheckSum]', symObjAddr: 0xE0, symBinAddr: 0x40E0, symSize: 0x8 }
+  - { offset: 0x85F1C, size: 0x8, addend: 0x0, symName: '-[FMSHeader setClass:]', symObjAddr: 0xE8, symBinAddr: 0x40E8, symSize: 0x8 }
+  - { offset: 0x85F5B, size: 0x8, addend: 0x0, symName: '-[FMSHeader setCommand:]', symObjAddr: 0xF0, symBinAddr: 0x40F0, symSize: 0x8 }
+  - { offset: 0x85F9A, size: 0x8, addend: 0x0, symName: '-[FMSHeader setParam1:]', symObjAddr: 0xF8, symBinAddr: 0x40F8, symSize: 0x8 }
+  - { offset: 0x85FD9, size: 0x8, addend: 0x0, symName: '-[FMSHeader setParam2:]', symObjAddr: 0x100, symBinAddr: 0x4100, symSize: 0x8 }
+  - { offset: 0x86018, size: 0x8, addend: 0x0, symName: '-[FMSHeader setDataSize1:]', symObjAddr: 0x108, symBinAddr: 0x4108, symSize: 0x8 }
+  - { offset: 0x86057, size: 0x8, addend: 0x0, symName: '-[FMSHeader setDataSize2:]', symObjAddr: 0x110, symBinAddr: 0x4110, symSize: 0x8 }
+  - { offset: 0x86096, size: 0x8, addend: 0x0, symName: '-[FMSHeader setHeaderWithPacket:]', symObjAddr: 0x14C, symBinAddr: 0x414C, symSize: 0x40 }
+  - { offset: 0x860D5, size: 0x8, addend: 0x0, symName: '-[FMSHeader getCheckSum:withLength:]', symObjAddr: 0x18C, symBinAddr: 0x418C, symSize: 0x24 }
+  - { offset: 0x86155, size: 0x8, addend: 0x0, symName: '-[FMSHeader resetHeader]', symObjAddr: 0x1B0, symBinAddr: 0x41B0, symSize: 0x14 }
+  - { offset: 0x86186, size: 0x8, addend: 0x0, symName: '-[FMSHeader header]', symObjAddr: 0x1C4, symBinAddr: 0x41C4, symSize: 0x10 }
+  - { offset: 0x861BD, size: 0x8, addend: 0x0, symName: '-[FMSHeader setHeader:]', symObjAddr: 0x1D4, symBinAddr: 0x41D4, symSize: 0xC }
+  - { offset: 0x861FC, size: 0x8, addend: 0x0, symName: '-[FMSHeader pHeaderInfo]', symObjAddr: 0x1E0, symBinAddr: 0x41E0, symSize: 0x8 }
+  - { offset: 0x86233, size: 0x8, addend: 0x0, symName: '-[FMSHeader setPHeaderInfo:]', symObjAddr: 0x1E8, symBinAddr: 0x41E8, symSize: 0x8 }
+  - { offset: 0x862F2, size: 0x8, addend: 0x0, symName: '-[FMSPacket init]', symObjAddr: 0x0, symBinAddr: 0x41F0, symSize: 0x6C }
+  - { offset: 0x86300, size: 0x8, addend: 0x0, symName: '-[FMSPacket getVersion]', symObjAddr: 0x6C, symBinAddr: 0x425C, symSize: 0xC }
+  - { offset: 0x8632A, size: 0x8, addend: 0x0, symName: _getVersion.cmd, symObjAddr: 0x538, symBinAddr: 0x15328, symSize: 0x0 }
+  - { offset: 0x86363, size: 0x8, addend: 0x0, symName: '-[FMSPacket getImageWithParam:withParam2:]', symObjAddr: 0x78, symBinAddr: 0x4268, symSize: 0x4C }
+  - { offset: 0x8638D, size: 0x8, addend: 0x0, symName: '_getImageWithParam:withParam2:.cmd', symObjAddr: 0x544, symBinAddr: 0x15334, symSize: 0x0 }
+  - { offset: 0x863F5, size: 0x8, addend: 0x0, symName: '-[FMSPacket fpRegisterStartWithUserID:withMaster:]', symObjAddr: 0xC4, symBinAddr: 0x42B4, symSize: 0x44 }
+  - { offset: 0x8641F, size: 0x8, addend: 0x0, symName: '_fpRegisterStartWithUserID:withMaster:.cmd', symObjAddr: 0x550, symBinAddr: 0x15340, symSize: 0x0 }
+  - { offset: 0x86487, size: 0x8, addend: 0x0, symName: '-[FMSPacket fpRegisterEnd]', symObjAddr: 0x108, symBinAddr: 0x42F8, symSize: 0xC }
+  - { offset: 0x864B1, size: 0x8, addend: 0x0, symName: _fpRegisterEnd.cmd, symObjAddr: 0x55C, symBinAddr: 0x1534C, symSize: 0x0 }
+  - { offset: 0x864D0, size: 0x8, addend: 0x0, symName: '-[FMSPacket fpVerifyWithUserID:]', symObjAddr: 0x114, symBinAddr: 0x4304, symSize: 0x38 }
+  - { offset: 0x864FA, size: 0x8, addend: 0x0, symName: '_fpVerifyWithUserID:.cmd', symObjAddr: 0x568, symBinAddr: 0x15358, symSize: 0x0 }
+  - { offset: 0x86554, size: 0x8, addend: 0x0, symName: '-[FMSPacket fpIdentify]', symObjAddr: 0x14C, symBinAddr: 0x433C, symSize: 0xC }
+  - { offset: 0x8657E, size: 0x8, addend: 0x0, symName: _fpIdentify.cmd, symObjAddr: 0x574, symBinAddr: 0x15364, symSize: 0x0 }
+  - { offset: 0x8659D, size: 0x8, addend: 0x0, symName: '-[FMSPacket fpDeleteWithUserID:]', symObjAddr: 0x158, symBinAddr: 0x4348, symSize: 0x38 }
+  - { offset: 0x865C7, size: 0x8, addend: 0x0, symName: '_fpDeleteWithUserID:.cmd', symObjAddr: 0x580, symBinAddr: 0x15370, symSize: 0x0 }
+  - { offset: 0x86621, size: 0x8, addend: 0x0, symName: '-[FMSPacket fpDeleteAll]', symObjAddr: 0x190, symBinAddr: 0x4380, symSize: 0xC }
+  - { offset: 0x8664B, size: 0x8, addend: 0x0, symName: _fpDeleteAll.cmd, symObjAddr: 0x58C, symBinAddr: 0x1537C, symSize: 0x0 }
+  - { offset: 0x8666A, size: 0x8, addend: 0x0, symName: '-[FMSPacket autoIdentifyStart]', symObjAddr: 0x204, symBinAddr: 0x43F4, symSize: 0xC }
+  - { offset: 0x86694, size: 0x8, addend: 0x0, symName: _autoIdentifyStart.cmd, symObjAddr: 0x598, symBinAddr: 0x15388, symSize: 0x0 }
+  - { offset: 0x866B3, size: 0x8, addend: 0x0, symName: '-[FMSPacket autoIdentifyStop]', symObjAddr: 0x210, symBinAddr: 0x4400, symSize: 0xC }
+  - { offset: 0x866DD, size: 0x8, addend: 0x0, symName: _autoIdentifyStop.cmd, symObjAddr: 0x5A4, symBinAddr: 0x15394, symSize: 0x0 }
+  - { offset: 0x866FC, size: 0x8, addend: 0x0, symName: '-[FMSPacket getPacket]', symObjAddr: 0x21C, symBinAddr: 0x440C, symSize: 0xC }
+  - { offset: 0x86726, size: 0x8, addend: 0x0, symName: _getPacket.cmd, symObjAddr: 0x382F, symBinAddr: 0x15534, symSize: 0x0 }
+  - { offset: 0x86745, size: 0x8, addend: 0x0, symName: '-[FMSPacket getPacketWithCommand:withParam1:withParam2:withDataSize:]', symObjAddr: 0x228, symBinAddr: 0x4418, symSize: 0x50 }
+  - { offset: 0x8676F, size: 0x8, addend: 0x0, symName: '_getPacketWithCommand:withParam1:withParam2:withDataSize:.cmd', symObjAddr: 0x383B, symBinAddr: 0x15540, symSize: 0x0 }
+  - { offset: 0x868E5, size: 0x8, addend: 0x0, symName: '-[FMSPacket init]', symObjAddr: 0x0, symBinAddr: 0x41F0, symSize: 0x6C }
+  - { offset: 0x8691C, size: 0x8, addend: 0x0, symName: '-[FMSPacket getRawBufFromWSQ:withWidth:withHeight:withPixelDepth:withPPI:withLossyFlag:withWsqBuf:withWsqLength:]', symObjAddr: 0x19C, symBinAddr: 0x438C, symSize: 0x68 }
+  - { offset: 0x869F0, size: 0x8, addend: 0x0, symName: '-[FMSPacket getCommand:]', symObjAddr: 0x278, symBinAddr: 0x4468, symSize: 0x8 }
+  - { offset: 0x86A31, size: 0x8, addend: 0x0, symName: '-[FMSPacket getParam1:]', symObjAddr: 0x280, symBinAddr: 0x4470, symSize: 0x8 }
+  - { offset: 0x86A72, size: 0x8, addend: 0x0, symName: '-[FMSPacket getParam2:]', symObjAddr: 0x288, symBinAddr: 0x4478, symSize: 0x8 }
+  - { offset: 0x86AB3, size: 0x8, addend: 0x0, symName: '-[FMSPacket getExtendedDataSize:]', symObjAddr: 0x290, symBinAddr: 0x4480, symSize: 0x8 }
+  - { offset: 0x86AF4, size: 0x8, addend: 0x0, symName: '-[FMSPacket getError:]', symObjAddr: 0x298, symBinAddr: 0x4488, symSize: 0x8 }
+  - { offset: 0x86B35, size: 0x8, addend: 0x0, symName: '-[FMSPacket getCheckSum:]', symObjAddr: 0x2A0, symBinAddr: 0x4490, symSize: 0x8 }
+  - { offset: 0x86B76, size: 0x8, addend: 0x0, symName: '-[FMSPacket sgheader]', symObjAddr: 0x2A8, symBinAddr: 0x4498, symSize: 0x8 }
+  - { offset: 0x86BAD, size: 0x8, addend: 0x0, symName: '-[FMSPacket setSgheader:]', symObjAddr: 0x2B0, symBinAddr: 0x44A0, symSize: 0xC }
+  - { offset: 0x86BEE, size: 0x8, addend: 0x0, symName: '-[FMSPacket .cxx_destruct]', symObjAddr: 0x2BC, symBinAddr: 0x44AC, symSize: 0xC }
+  - { offset: 0x86C90, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint(CAPPluginCategory) pluginMethods]', symObjAddr: 0x0, symBinAddr: 0x44B8, symSize: 0x340 }
+  - { offset: 0x86C9E, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint(CAPPluginCategory) pluginMethods]', symObjAddr: 0x0, symBinAddr: 0x44B8, symSize: 0x340 }
+  - { offset: 0x86CE1, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint(CAPPluginCategory) identifier]', symObjAddr: 0x340, symBinAddr: 0x47F8, symSize: 0xC }
+  - { offset: 0x86D14, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint(CAPPluginCategory) jsName]', symObjAddr: 0x34C, symBinAddr: 0x4804, symSize: 0xC }
+  - { offset: 0x86DBF, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint load]', symObjAddr: 0x0, symBinAddr: 0x4810, symSize: 0x94 }
+  - { offset: 0x86DCD, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint handleImageData:]', symObjAddr: 0x2820, symBinAddr: 0x7030, symSize: 0x2B8 }
+  - { offset: 0x86DF5, size: 0x8, addend: 0x0, symName: '_handleImageData:.lastPercent', symObjAddr: 0x6F90, symBinAddr: 0x15460, symSize: 0x0 }
+  - { offset: 0x87107, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint load]', symObjAddr: 0x0, symBinAddr: 0x4810, symSize: 0x94 }
+  - { offset: 0x8715D, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint initialize:]', symObjAddr: 0x94, symBinAddr: 0x48A4, symSize: 0x54 }
+  - { offset: 0x871B8, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint isBluetoothEnabled:]', symObjAddr: 0xE8, symBinAddr: 0x48F8, symSize: 0x20C }
+  - { offset: 0x872BF, size: 0x8, addend: 0x0, symName: '___41-[SecuGenFingerprint isBluetoothEnabled:]_block_invoke', symObjAddr: 0x2F4, symBinAddr: 0x4B04, symSize: 0x124 }
+  - { offset: 0x87359, size: 0x8, addend: 0x0, symName: ___copy_helper_block_e8_32s40s, symObjAddr: 0x418, symBinAddr: 0x4C28, symSize: 0x28 }
+  - { offset: 0x87382, size: 0x8, addend: 0x0, symName: ___destroy_helper_block_e8_32s40s, symObjAddr: 0x440, symBinAddr: 0x4C50, symSize: 0x28 }
+  - { offset: 0x873A1, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint scan:]', symObjAddr: 0x468, symBinAddr: 0x4C78, symSize: 0x1C0 }
+  - { offset: 0x8742B, size: 0x8, addend: 0x0, symName: '___27-[SecuGenFingerprint scan:]_block_invoke', symObjAddr: 0x628, symBinAddr: 0x4E38, symSize: 0x38 }
+  - { offset: 0x8746A, size: 0x8, addend: 0x0, symName: ___copy_helper_block_e8_32s, symObjAddr: 0x660, symBinAddr: 0x4E70, symSize: 0x8 }
+  - { offset: 0x87491, size: 0x8, addend: 0x0, symName: ___destroy_helper_block_e8_32s, symObjAddr: 0x668, symBinAddr: 0x4E78, symSize: 0x8 }
+  - { offset: 0x874B0, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint stopScan:]', symObjAddr: 0x670, symBinAddr: 0x4E80, symSize: 0x60 }
+  - { offset: 0x8750F, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint stopScanInternal]', symObjAddr: 0x6D0, symBinAddr: 0x4EE0, symSize: 0x74 }
+  - { offset: 0x87550, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint connect:]', symObjAddr: 0x744, symBinAddr: 0x4F54, symSize: 0x30C }
+  - { offset: 0x875FC, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint disconnect:]', symObjAddr: 0xA50, symBinAddr: 0x5260, symSize: 0x1C }
+  - { offset: 0x87645, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint isConnected:]', symObjAddr: 0xA6C, symBinAddr: 0x527C, symSize: 0x1C }
+  - { offset: 0x8768E, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint capture:]', symObjAddr: 0xA88, symBinAddr: 0x5298, symSize: 0x520 }
+  - { offset: 0x877B6, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint getVersion:]', symObjAddr: 0xFA8, symBinAddr: 0x57B8, symSize: 0x1C }
+  - { offset: 0x877FF, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint register:]', symObjAddr: 0xFC4, symBinAddr: 0x57D4, symSize: 0x1C }
+  - { offset: 0x87848, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint completeRegistration:]', symObjAddr: 0xFE0, symBinAddr: 0x57F0, symSize: 0x1C }
+  - { offset: 0x87891, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint verify:]', symObjAddr: 0xFFC, symBinAddr: 0x580C, symSize: 0x1C }
+  - { offset: 0x878DC, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint identify:]', symObjAddr: 0x1018, symBinAddr: 0x5828, symSize: 0x1C }
+  - { offset: 0x87927, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint match:]', symObjAddr: 0x1034, symBinAddr: 0x5844, symSize: 0x1C }
+  - { offset: 0x87972, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint deleteFingerprint:]', symObjAddr: 0x1050, symBinAddr: 0x5860, symSize: 0x1C }
+  - { offset: 0x879BD, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setPowerOffTime:]', symObjAddr: 0x106C, symBinAddr: 0x587C, symSize: 0x280 }
+  - { offset: 0x87A62, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint centralManagerDidUpdateState:]', symObjAddr: 0x12EC, symBinAddr: 0x5AFC, symSize: 0x1D8 }
+  - { offset: 0x87AE5, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint centralManager:didDiscoverPeripheral:advertisementData:RSSI:]', symObjAddr: 0x14C4, symBinAddr: 0x5CD4, symSize: 0x478 }
+  - { offset: 0x87BF1, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint centralManager:didConnectPeripheral:]', symObjAddr: 0x193C, symBinAddr: 0x614C, symSize: 0x280 }
+  - { offset: 0x87C73, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint centralManager:didDisconnectPeripheral:error:]', symObjAddr: 0x1BBC, symBinAddr: 0x63CC, symSize: 0xB4 }
+  - { offset: 0x87CE4, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint centralManager:didFailToConnectPeripheral:error:]', symObjAddr: 0x1C70, symBinAddr: 0x6480, symSize: 0x134 }
+  - { offset: 0x87D55, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint peripheral:didDiscoverServices:]', symObjAddr: 0x1DA4, symBinAddr: 0x65B4, symSize: 0x280 }
+  - { offset: 0x87E1A, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint peripheral:didDiscoverCharacteristicsForService:error:]', symObjAddr: 0x2024, symBinAddr: 0x6834, symSize: 0x330 }
+  - { offset: 0x87ED1, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint peripheral:didUpdateValueForCharacteristic:error:]', symObjAddr: 0x2354, symBinAddr: 0x6B64, symSize: 0xEC }
+  - { offset: 0x87F62, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint handleReceivedData:]', symObjAddr: 0x2440, symBinAddr: 0x6C50, symSize: 0x14C }
+  - { offset: 0x87FE9, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint handleCommandResponse:]', symObjAddr: 0x258C, symBinAddr: 0x6D9C, symSize: 0x294 }
+  - { offset: 0x880C3, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint processCompleteImage]', symObjAddr: 0x2AD8, symBinAddr: 0x72E8, symSize: 0x360 }
+  - { offset: 0x88165, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint startFingerMonitoringOnce]', symObjAddr: 0x2E38, symBinAddr: 0x7648, symSize: 0x74 }
+  - { offset: 0x881C4, size: 0x8, addend: 0x0, symName: '___47-[SecuGenFingerprint startFingerMonitoringOnce]_block_invoke', symObjAddr: 0x2EAC, symBinAddr: 0x76BC, symSize: 0xC8 }
+  - { offset: 0x88222, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint scaleImageData:fromWidth:fromHeight:toWidth:toHeight:]', symObjAddr: 0x2F74, symBinAddr: 0x7784, symSize: 0x198 }
+  - { offset: 0x883BB, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint centralManager]', symObjAddr: 0x310C, symBinAddr: 0x791C, symSize: 0x10 }
+  - { offset: 0x883F2, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setCentralManager:]', symObjAddr: 0x311C, symBinAddr: 0x792C, symSize: 0x14 }
+  - { offset: 0x88433, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint connectedPeripheral]', symObjAddr: 0x3130, symBinAddr: 0x7940, symSize: 0x10 }
+  - { offset: 0x8846A, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setConnectedPeripheral:]', symObjAddr: 0x3140, symBinAddr: 0x7950, symSize: 0x14 }
+  - { offset: 0x884AB, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint writeCharacteristic]', symObjAddr: 0x3154, symBinAddr: 0x7964, symSize: 0x10 }
+  - { offset: 0x884E2, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setWriteCharacteristic:]', symObjAddr: 0x3164, symBinAddr: 0x7974, symSize: 0x14 }
+  - { offset: 0x88523, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint notifyCharacteristic]', symObjAddr: 0x3178, symBinAddr: 0x7988, symSize: 0x10 }
+  - { offset: 0x8855A, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setNotifyCharacteristic:]', symObjAddr: 0x3188, symBinAddr: 0x7998, symSize: 0x14 }
+  - { offset: 0x8859B, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint ImageData]', symObjAddr: 0x319C, symBinAddr: 0x79AC, symSize: 0x10 }
+  - { offset: 0x885D2, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setImageData:]', symObjAddr: 0x31AC, symBinAddr: 0x79BC, symSize: 0x14 }
+  - { offset: 0x88613, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint total_receive_size]', symObjAddr: 0x31C0, symBinAddr: 0x79D0, symSize: 0x10 }
+  - { offset: 0x8864A, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setTotal_receive_size:]', symObjAddr: 0x31D0, symBinAddr: 0x79E0, symSize: 0x10 }
+  - { offset: 0x88687, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint remaining_data_size]', symObjAddr: 0x31E0, symBinAddr: 0x79F0, symSize: 0x10 }
+  - { offset: 0x886BE, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setRemaining_data_size:]', symObjAddr: 0x31F0, symBinAddr: 0x7A00, symSize: 0x10 }
+  - { offset: 0x886FB, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint imgsize]', symObjAddr: 0x3200, symBinAddr: 0x7A10, symSize: 0x10 }
+  - { offset: 0x88732, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setImgsize:]', symObjAddr: 0x3210, symBinAddr: 0x7A20, symSize: 0x10 }
+  - { offset: 0x8876F, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint wsqbitrate]', symObjAddr: 0x3220, symBinAddr: 0x7A30, symSize: 0x10 }
+  - { offset: 0x887A6, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setWsqbitrate:]', symObjAddr: 0x3230, symBinAddr: 0x7A40, symSize: 0x10 }
+  - { offset: 0x887E3, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint isWSQ]', symObjAddr: 0x3240, symBinAddr: 0x7A50, symSize: 0x10 }
+  - { offset: 0x8881A, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setIsWSQ:]', symObjAddr: 0x3250, symBinAddr: 0x7A60, symSize: 0x10 }
+  - { offset: 0x88855, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint serviceUUID]', symObjAddr: 0x3260, symBinAddr: 0x7A70, symSize: 0x10 }
+  - { offset: 0x8888C, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setServiceUUID:]', symObjAddr: 0x3270, symBinAddr: 0x7A80, symSize: 0x14 }
+  - { offset: 0x888CD, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint writeCharacteristicUUID]', symObjAddr: 0x3284, symBinAddr: 0x7A94, symSize: 0x10 }
+  - { offset: 0x88904, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setWriteCharacteristicUUID:]', symObjAddr: 0x3294, symBinAddr: 0x7AA4, symSize: 0x14 }
+  - { offset: 0x88945, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint notifyCharacteristicUUID]', symObjAddr: 0x32A8, symBinAddr: 0x7AB8, symSize: 0x10 }
+  - { offset: 0x8897C, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setNotifyCharacteristicUUID:]', symObjAddr: 0x32B8, symBinAddr: 0x7AC8, symSize: 0x14 }
+  - { offset: 0x889BD, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint isConnected]', symObjAddr: 0x32CC, symBinAddr: 0x7ADC, symSize: 0x10 }
+  - { offset: 0x889F4, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setIsConnected:]', symObjAddr: 0x32DC, symBinAddr: 0x7AEC, symSize: 0x10 }
+  - { offset: 0x88A2F, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint isScanning]', symObjAddr: 0x32EC, symBinAddr: 0x7AFC, symSize: 0x10 }
+  - { offset: 0x88A66, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setIsScanning:]', symObjAddr: 0x32FC, symBinAddr: 0x7B0C, symSize: 0x10 }
+  - { offset: 0x88AA1, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint isCapturing]', symObjAddr: 0x330C, symBinAddr: 0x7B1C, symSize: 0x10 }
+  - { offset: 0x88AD8, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setIsCapturing:]', symObjAddr: 0x331C, symBinAddr: 0x7B2C, symSize: 0x10 }
+  - { offset: 0x88B13, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint currentCommand]', symObjAddr: 0x332C, symBinAddr: 0x7B3C, symSize: 0x10 }
+  - { offset: 0x88B4A, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setCurrentCommand:]', symObjAddr: 0x333C, symBinAddr: 0x7B4C, symSize: 0x10 }
+  - { offset: 0x88B87, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint currentCall]', symObjAddr: 0x334C, symBinAddr: 0x7B5C, symSize: 0x10 }
+  - { offset: 0x88BBE, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setCurrentCall:]', symObjAddr: 0x335C, symBinAddr: 0x7B6C, symSize: 0x14 }
+  - { offset: 0x88BFF, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint targetWidth]', symObjAddr: 0x3370, symBinAddr: 0x7B80, symSize: 0x10 }
+  - { offset: 0x88C36, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setTargetWidth:]', symObjAddr: 0x3380, symBinAddr: 0x7B90, symSize: 0x10 }
+  - { offset: 0x88C73, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint targetHeight]', symObjAddr: 0x3390, symBinAddr: 0x7BA0, symSize: 0x10 }
+  - { offset: 0x88CAA, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setTargetHeight:]', symObjAddr: 0x33A0, symBinAddr: 0x7BB0, symSize: 0x10 }
+  - { offset: 0x88CE7, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint originalWidth]', symObjAddr: 0x33B0, symBinAddr: 0x7BC0, symSize: 0x10 }
+  - { offset: 0x88D1E, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setOriginalWidth:]', symObjAddr: 0x33C0, symBinAddr: 0x7BD0, symSize: 0x10 }
+  - { offset: 0x88D5B, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint originalHeight]', symObjAddr: 0x33D0, symBinAddr: 0x7BE0, symSize: 0x10 }
+  - { offset: 0x88D92, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setOriginalHeight:]', symObjAddr: 0x33E0, symBinAddr: 0x7BF0, symSize: 0x10 }
+  - { offset: 0x88DCF, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint needsScaling]', symObjAddr: 0x33F0, symBinAddr: 0x7C00, symSize: 0x10 }
+  - { offset: 0x88E06, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint setNeedsScaling:]', symObjAddr: 0x3400, symBinAddr: 0x7C10, symSize: 0x10 }
+  - { offset: 0x88E41, size: 0x8, addend: 0x0, symName: '-[SecuGenFingerprint .cxx_destruct]', symObjAddr: 0x3410, symBinAddr: 0x7C20, symSize: 0xCC }
+...

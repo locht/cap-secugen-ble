@@ -1,0 +1,157 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Device Scanner
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Device Scanner</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="container">
+    <!-- Status Card -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>SecuGen BLE Status</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>Plugin Initialized</ion-label>
+          <ion-badge [color]="isInitialized ? 'success' : 'danger'">
+            {{ isInitialized ? 'Yes' : 'No' }}
+          </ion-badge>
+        </ion-item>
+        <ion-item>
+          <ion-label>Bluetooth Enabled</ion-label>
+          <ion-badge [color]="bluetoothEnabled ? 'success' : 'danger'">
+            {{ bluetoothEnabled ? 'Yes' : 'No' }}
+          </ion-badge>
+        </ion-item>
+        <ion-item>
+          <ion-label>Device Connected</ion-label>
+          <ion-badge [color]="connectedDevice ? 'success' : 'medium'">
+            {{ connectedDevice ? 'Yes' : 'No' }}
+          </ion-badge>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Control Buttons -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Controls</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button 
+          expand="block" 
+          (click)="initialize()" 
+          [disabled]="isInitialized">
+          <ion-icon name="power" slot="start"></ion-icon>
+          Initialize Plugin
+        </ion-button>
+        
+        <ion-button 
+          expand="block" 
+          (click)="checkBluetooth()" 
+          color="secondary">
+          <ion-icon name="bluetooth" slot="start"></ion-icon>
+          Check Bluetooth
+        </ion-button>
+        
+        <ion-button 
+          expand="block" 
+          (click)="startScan()" 
+          [disabled]="!isInitialized || isScanning"
+          color="tertiary">
+          <ion-icon name="search" slot="start"></ion-icon>
+          {{ isScanning ? 'Scanning...' : 'Start Scan' }}
+        </ion-button>
+        
+        <ion-button 
+          expand="block" 
+          (click)="stopScan()" 
+          [disabled]="!isScanning"
+          color="warning">
+          <ion-icon name="stop" slot="start"></ion-icon>
+          Stop Scan
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Connected Device Info -->
+    <ion-card *ngIf="connectedDevice">
+      <ion-card-header>
+        <ion-card-title>Connected Device</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>
+            <h3>{{ connectedDevice.name || 'Unknown Device' }}</h3>
+            <p>ID: {{ connectedDevice.id }}</p>
+            <p>Address: {{ connectedDevice.address }}</p>
+            <p *ngIf="connectedDevice.rssi">RSSI: {{ connectedDevice.rssi }} dBm</p>
+          </ion-label>
+        </ion-item>
+        <ion-button 
+          expand="block" 
+          (click)="disconnect()" 
+          color="danger">
+          <ion-icon name="close" slot="start"></ion-icon>
+          Disconnect
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Scanned Devices List -->
+    <ion-card *ngIf="scannedDevices.length > 0">
+      <ion-card-header>
+        <ion-card-title>Found Devices ({{ scannedDevices.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item 
+            *ngFor="let device of scannedDevices" 
+            button 
+            (click)="connectToDevice(device)"
+            [disabled]="!!connectedDevice">
+            <ion-label>
+              <h3>{{ device.name || 'Unknown Device' }}</h3>
+              <p>{{ device.address }}</p>
+              <p *ngIf="device.rssi">Signal: {{ device.rssi }} dBm</p>
+            </ion-label>
+            <ion-icon name="chevron-forward" slot="end"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Messages -->
+    <ion-card *ngIf="messages.length > 0">
+      <ion-card-header>
+        <ion-card-title>Messages</ion-card-title>
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          (click)="clearMessages()"
+          slot="end">
+          Clear
+        </ion-button>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let message of messages.slice(-5)">
+            <ion-label>
+              <p [class]="message.type">{{ message.text }}</p>
+              <p><small>{{ message.timestamp | date:'HH:mm:ss' }}</small></p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

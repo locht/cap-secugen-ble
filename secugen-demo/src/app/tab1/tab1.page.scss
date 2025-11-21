@@ -1,0 +1,27 @@
+.container {
+  padding: 16px;
+}
+
+ion-card {
+  margin-bottom: 16px;
+}
+
+ion-button {
+  margin-bottom: 8px;
+}
+
+.success {
+  color: var(--ion-color-success);
+}
+
+.error {
+  color: var(--ion-color-danger);
+}
+
+.info {
+  color: var(--ion-color-primary);
+}
+
+.warning {
+  color: var(--ion-color-warning);
+}

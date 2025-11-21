@@ -1,0 +1,675 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Fingerprint Capture </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Fingerprint Capture</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Capture Progress Modal -->
+  <ion-modal [isOpen]="showCaptureModal" [canDismiss]="true" (didDismiss)="onModalDismiss()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Đang Chụp Vân Tay</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="capture-modal-content">
+        <div class="capture-progress-container">
+          <!-- Fingerprint Animation -->
+          <div class="fingerprint-animation">
+            <ion-icon
+              name="finger-print"
+              [class.pulse]="captureProgress.status === 'capturing'"
+              [class.downloading]="captureProgress.status === 'downloading'"
+            >
+            </ion-icon>
+          </div>
+
+          <!-- Status Message -->
+          <h2 class="capture-status">{{ captureProgress.message }}</h2>
+
+          <!-- Timer Display -->
+          <div class="timer-section">
+            <p class="timer-text">⏱️ {{ captureProgress.elapsedTime }}s</p>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-section" *ngIf="captureProgress.status === 'downloading'">
+            <ion-progress-bar [value]="captureProgress.progress / 100" color="primary"> </ion-progress-bar>
+            <p class="progress-text">{{ captureProgress.progress }}%</p>
+          </div>
+
+          <!-- Instructions -->
+          <div class="instructions">
+            <p *ngIf="captureProgress.status === 'capturing'">
+              <ion-icon name="hand-left" color="primary"></ion-icon>
+              Đặt ngón tay lên cảm biến và giữ yên
+            </p>
+            <p *ngIf="captureProgress.status === 'downloading'">
+              <ion-icon name="download" color="success"></ion-icon>
+              Đang tải dữ liệu vân tay...
+            </p>
+          </div>
+
+          <!-- Cancel Button -->
+          <ion-button expand="block" fill="outline" color="danger" (click)="cancelCapture()" class="cancel-button">
+            <ion-icon name="close" slot="start"></ion-icon>
+            Hủy bỏ
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Main Layout: 2 Columns -->
+  <div class="main-layout">
+    <!-- Left Column: Device Management -->
+    <div class="left-column">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="bluetooth" color="primary"></ion-icon>
+            Quản Lý Thiết Bị
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Preferred Devices Section -->
+          <div class="device-section">
+            <h4 class="section-title">
+              Danh sách thiết bị ưa thích
+              <ion-button
+                *ngIf="preferredDevices.length > 0"
+                fill="clear"
+                size="small"
+                color="danger"
+                (click)="clearPreferredDevice()"
+              >
+                <ion-icon name="trash" slot="icon-only"></ion-icon>
+              </ion-button>
+            </h4>
+
+            <div *ngIf="preferredDevices.length > 0; else noPreferredDevices">
+              <ion-item *ngFor="let device of preferredDevices" lines="full">
+                <ion-icon name="star" slot="start" color="warning"></ion-icon>
+                <ion-label>
+                  <h3>{{ device.name }}</h3>
+                  <p class="device-details">{{ device.id }}</p>
+                </ion-label>
+                <ion-button fill="clear" color="danger" (click)="removePreferredDevice(device.id)" slot="end">
+                  <ion-icon name="close"></ion-icon>
+                </ion-button>
+              </ion-item>
+            </div>
+
+            <ng-template #noPreferredDevices>
+              <ion-item lines="full">
+                <ion-icon name="star-outline" slot="start" color="medium"></ion-icon>
+                <ion-label>
+                  <h3>Chưa có thiết bị ưa thích</h3>
+                </ion-label>
+              </ion-item>
+            </ng-template>
+          </div>
+
+          <!-- Device Selection Section -->
+          <div class="device-section">
+            <h4 class="section-title">Chọn thiết bị (BLE)</h4>
+            <ion-item>
+              <ion-select [(ngModel)]="selectedDeviceId" placeholder="Chọn thiết bị..." interface="popover">
+                <ion-select-option *ngFor="let device of availableDevices" [value]="device.id">
+                  {{ device.name }} ({{ device.rssi }})
+                </ion-select-option>
+              </ion-select>
+              <ion-label slot="start">Thiết bị:</ion-label>
+            </ion-item>
+          </div>
+
+          <!-- Device Actions - Vertical Layout -->
+          <div class="device-actions-vertical">
+            <ion-button expand="block" fill="outline" (click)="scanForDevices()" [disabled]="isScanning">
+              <ion-icon name="search" slot="start"></ion-icon>
+              {{ isScanning ? 'Đang quét...' : 'Quét thiết bị' }}
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              color="success"
+              (click)="connectToSelectedDevice()"
+              [disabled]="!selectedDeviceId || isConnecting"
+            >
+              <ion-icon name="bluetooth" slot="start"></ion-icon>
+              {{ isConnecting ? 'Đang kết nối...' : 'Kết nối' }}
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              color="danger"
+              fill="outline"
+              (click)="disconnectDevice()"
+              [disabled]="!connectedDevice"
+            >
+              <ion-icon name="unlink" slot="start"></ion-icon>
+              Ngắt kết nối
+            </ion-button>
+
+            <ion-button expand="block" color="warning" (click)="saveCurrentAsPreferred()" [disabled]="!connectedDevice">
+              <ion-icon name="star" slot="start"></ion-icon>
+              Lưu làm thiết bị ưa thích
+            </ion-button>
+
+            <ion-button
+              expand="block"
+              color="tertiary"
+              (click)="wakeUpAndConnect()"
+              [disabled]="!preferredDevice || isConnecting"
+            >
+              <ion-icon name="power" slot="start"></ion-icon>
+              {{ isConnecting ? 'Đang đánh thức...' : 'Đánh thức thiết bị ưa thích' }}
+            </ion-button>
+          </div>
+
+          <!-- Connection Status -->
+          <div class="device-section">
+            <h4 class="section-title">Trạng thái kết nối</h4>
+            <ng-container *ngIf="connectedDevice; else notConnected">
+              <ion-item>
+                <ion-icon name="checkmark-circle" slot="start" color="success"></ion-icon>
+                <ion-label>
+                  <h3>{{ connectedDevice.name }}</h3>
+                  <p>{{ connectedDevice.address }}</p>
+                </ion-label>
+                <ion-badge color="success">Đã kết nối</ion-badge>
+              </ion-item>
+            </ng-container>
+            <ng-template #notConnected>
+              <ion-item>
+                <ion-icon name="close-circle" slot="start" color="danger"></ion-icon>
+                <ion-label>
+                  <h3>Chưa kết nối</h3>
+                </ion-label>
+                <ion-badge color="danger">Chưa kết nối</ion-badge>
+              </ion-item>
+            </ng-template>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Local Templates Debug Card -->
+    <!-- <div class="capture-column">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Templates Local (1:N)</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item lines="none">
+            <ion-label>
+              <h3>Tổng số template</h3>
+              <p>{{ localTemplatesCount }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item lines="none">
+            <ion-label>
+              <h3>Danh sách (index / length)</h3>
+              <p *ngIf="localTemplatesInfo.length === 0">Chưa có template nào trong localStorage.</p>
+              <ul *ngIf="localTemplatesInfo.length > 0">
+                <li *ngFor="let info of localTemplatesInfo">{{ info }}</li>
+              </ul>
+            </ion-label>
+          </ion-item>
+
+          <div class="device-actions-vertical">
+            <ion-button expand="block" fill="outline" color="primary" (click)="refreshLocalTemplates()">
+              <ion-icon name="refresh" slot="start"></ion-icon>
+              Refresh templates local
+            </ion-button>
+
+            <ion-button expand="block" fill="outline" color="danger" (click)="clearLocalTemplates()">
+              <ion-icon name="trash" slot="start"></ion-icon>
+              Clear templates local
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div> -->
+
+    <!-- Right Column: Capture Settings & Actions -->
+    <div class="right-column">
+      <!-- <ion-card>
+        <ion-card-header>
+          <ion-card-title>Test Match 1-1 Trực Tiếp</ion-card-title>
+        </ion-card-header>
+        <ion-card-content class="device-actions-vertical">
+          <ion-button expand="block" color="warning" (click)="registerForTemplate1()" [disabled]="!connectedDevice">
+            <ion-icon name="person-add" slot="start"></ion-icon>
+            Đăng ký cho template 1 (ID 1)
+          </ion-button>
+          <ion-button expand="block" color="warning" (click)="registerForTemplate2()" [disabled]="!connectedDevice">
+            <ion-icon name="person-add" slot="start"></ion-icon>
+            Đăng ký cho template 2 (ID 2)
+          </ion-button>
+
+          <ion-button expand="block" color="primary" (click)="getTemplate1()" [disabled]="!connectedDevice">
+            <ion-icon name="finger-print" slot="start"></ion-icon>
+            Lấy template 1
+          </ion-button>
+          <ion-button expand="block" color="primary" (click)="getTemplate2()" [disabled]="!connectedDevice">
+            <ion-icon name="finger-print" slot="start"></ion-icon>
+            Lấy template 2
+          </ion-button>
+          <ion-button expand="block" color="secondary" (click)="compareTemplates()">
+            <ion-icon name="git-compare" slot="start"></ion-icon>
+            So sánh 2 template
+          </ion-button>
+        </ion-card-content>
+      </ion-card> -->
+
+      <ion-card *ngIf="connectedDevice">
+        <ion-card-header>
+          <ion-card-title>Cài Đặt & Thao Tác Chụp Vân Tay</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Settings Section -->
+          <div class="settings-section">
+            <h4 class="section-title">Cài đặt</h4>
+            <ion-item>
+              <ion-label>Kích thước ảnh</ion-label>
+              <ion-select
+                [(ngModel)]="captureSettings.sizeOption"
+                interface="popover"
+                (ionChange)="onSettingsChange('sizeOption', $event)"
+              >
+                <ion-select-option value="full">Full Size (300x400)</ion-select-option>
+                <ion-select-option value="half">Half Size (150x200)</ion-select-option>
+                <ion-select-option value="small">Small Size (90x120)</ion-select-option>
+                <ion-select-option value="tiny">Tiny Size (60x80)</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-label>Định dạng</ion-label>
+              <ion-select
+                [(ngModel)]="captureSettings.wsqFormat"
+                interface="popover"
+                (ionChange)="onSettingsChange('wsqFormat', $event)"
+              >
+                <ion-select-option [value]="true">WSQ Compressed</ion-select-option>
+                <ion-select-option [value]="false">Raw Image</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-label>Timeout (giây)</ion-label>
+              <ion-input type="number" [(ngModel)]="captureSettings.timeoutSeconds" min="5" max="60"> </ion-input>
+            </ion-item>
+          </div>
+
+          <!-- Actions Section - Vertical Layout -->
+          <div class="actions-section">
+            <h4 class="section-title">Thao tác</h4>
+            <div class="action-buttons-vertical">
+              <ion-button expand="block" (click)="captureFingerprint()" [disabled]="isCapturing" color="primary">
+                <ion-icon name="finger-print" slot="start"></ion-icon>
+                {{ isCapturing ? 'Đang chụp...' : 'Chụp vân tay' }}
+              </ion-button>
+
+              <ion-button expand="block" (click)="getDeviceVersion()" color="secondary">
+                <ion-icon name="information-circle" slot="start"></ion-icon>
+                Phiên bản thiết bị
+              </ion-button>
+
+              <ion-button expand="block" (click)="clearResults()" color="light">
+                <ion-icon name="trash" slot="start"></ion-icon>
+                Xóa kết quả
+              </ion-button>
+
+              <ion-button expand="block" (click)="setPowerOffTime()" color="tertiary">
+                <ion-icon name="power" slot="start"></ion-icon>
+                Thiết lập Wake-up (30p)
+              </ion-button>
+
+              <ion-button expand="block" color="success" (click)="startRegistration()">
+                <ion-icon name="person-add" slot="start"></ion-icon>
+                Đăng ký vân tay
+              </ion-button>
+
+              <ion-button expand="block" color="warning" (click)="endRegistration()">
+                <ion-icon name="checkmark-done" slot="start"></ion-icon>
+                Kết thúc đăng ký
+              </ion-button>
+
+              <ion-button
+                expand="block"
+                color="success"
+                (click)="oneTouchRegisterAndGetTemplate()"
+                [disabled]="!connectedDevice"
+              >
+                <ion-icon name="flash" slot="start"></ion-icon>
+                Đăng ký 1 chạm + Lấy template
+              </ion-button>
+
+              <ion-button
+                expand="block"
+                color="medium"
+                (click)="getFingerprintTemplate()"
+                [disabled]="!connectedDevice"
+              >
+                <ion-icon name="document-text" slot="start"></ion-icon>
+                Lấy template vân tay
+              </ion-button>
+
+              <ion-button
+                expand="block"
+                color="light"
+                (click)="saveCurrentTemplateForLocalMatch()"
+                [disabled]="!connectedDevice"
+              >
+                <ion-icon name="save" slot="start"></ion-icon>
+                Lưu template làm probe (local)
+              </ion-button>
+
+              <ion-button
+                expand="block"
+                color="secondary"
+                (click)="matchFingerprint()"
+                [disabled]="!connectedDevice"
+              >
+                <ion-icon name="git-compare" slot="start"></ion-icon>
+                Match vân tay (score)
+              </ion-button>
+
+              <ion-button
+                expand="block"
+                color="secondary"
+                fill="outline"
+                (click)="matchLocalTemplates()"
+                [disabled]="!connectedDevice"
+              >
+                <ion-icon name="git-compare" slot="start"></ion-icon>
+                Match local 1:N (realtime vs local)
+              </ion-button>
+
+              <ion-button expand="block" color="dark" (click)="verifyFingerprint()">
+                <ion-icon name="shield-checkmark" slot="start"></ion-icon>
+                Xác thực vân tay
+              </ion-button>
+
+              <ion-button
+                expand="block"
+                color="tertiary"
+                (click)="identifyFingerprint()"
+                [disabled]="!connectedDevice"
+              >
+                <ion-icon name="search" slot="start"></ion-icon>
+                Nhận dạng vân tay (Identify)
+              </ion-button>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Bottom Row: Messages & Capture Results -->
+  <div class="bottom-row">
+    <!-- Messages Card -->
+    <div class="messages-column">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Messages</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="messages-container">
+            <div
+              *ngFor="let message of messages; let i = index"
+              class="message-item"
+              [class]="'message-' + message.type"
+            >
+              <span class="message-time">{{ message.timestamp | date:'HH:mm:ss' }}</span>
+              <span class="message-text">{{ message.text }}</span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Capture Results Card -->
+    <div class="capture-column">
+      <ion-card *ngIf="captureResult">
+        <ion-card-header>
+          <ion-card-title>Kết Quả Chụp Vân Tay</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label>
+              <h3>Trạng thái</h3>
+              <p [class]="captureResult.success ? 'success' : 'error'">
+                {{ captureResult.success ? 'Thành công' : 'Thất bại' }}
+              </p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="captureResult.message">
+            <ion-label>
+              <h3>Thông báo</h3>
+              <p>{{ captureResult.message }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="captureResult.width && captureResult.height">
+            <ion-label>
+              <h3>Kích thước</h3>
+              <p>{{ captureResult.width }} x {{ captureResult.height }} pixels</p>
+            </ion-label>
+          </ion-item>
+
+          <!-- Image Preview -->
+          <div *ngIf="captureResult.pngBase64" class="image-preview">
+            <h4>Hình ảnh vân tay (PNG):</h4>
+            <img
+              [src]="'data:image/png;base64,' + captureResult.pngBase64"
+              alt="Fingerprint Image"
+              class="fingerprint-image"
+            />
+          </div>
+
+          <!-- Raw Image Canvas Display (New) -->
+          <div *ngIf="captureResult && captureResult.width && captureResult.height" class="raw-image-section">
+            <h4>Hình ảnh RAW (từ Canvas):</h4>
+
+            <!-- Original Image Canvas -->
+            <div class="canvas-container">
+              <canvas
+                #captureCanvas
+                class="fingerprint-canvas"
+                [width]="captureResult.width"
+                [height]="captureResult.height"
+              ></canvas>
+            </div>
+
+            <!-- Image Quality Stats -->
+            <div *ngIf="imageStats" class="image-quality-section">
+              <h5>📊 Chất Lượng Hình Ảnh:</h5>
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <span class="stat-label">Min:</span>
+                  <span class="stat-value">{{ imageStats.min }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Max:</span>
+                  <span class="stat-value">{{ imageStats.max }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Mean:</span>
+                  <span class="stat-value">{{ imageStats.mean | number:'1.0-0' }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Median:</span>
+                  <span class="stat-value">{{ imageStats.median }}</span>
+                </div>
+              </div>
+
+              <!-- Quality Assessment Badges -->
+              <div class="quality-badges">
+                <span class="badge badge-good" *ngIf="imageStats.mean > 100 && (imageStats.max - imageStats.min) > 50">
+                  ✅ Chất Lượng Tốt
+                </span>
+                <span class="badge badge-warning" *ngIf="imageStats.mean <= 100"> ⚠️ Quá Tối </span>
+                <span class="badge badge-warning" *ngIf="(imageStats.max - imageStats.min) <= 50">
+                  ⚠️ Độ Tương Phản Thấp
+                </span>
+              </div>
+            </div>
+
+            <!-- Enhancement Controls -->
+            <div class="enhancement-controls">
+              <ion-button
+                expand="block"
+                fill="outline"
+                color="primary"
+                (click)="enhanceImageContrast()"
+                [disabled]="isEnhanced"
+              >
+                <ion-icon name="contrast" slot="start"></ion-icon>
+                Tăng Độ Tương Phản
+              </ion-button>
+              <ion-button
+                expand="block"
+                fill="outline"
+                color="medium"
+                (click)="resetEnhancement()"
+                [disabled]="!isEnhanced"
+              >
+                <ion-icon name="refresh" slot="start"></ion-icon>
+                Đặt Lại
+              </ion-button>
+            </div>
+
+            <!-- Scaled Preview -->
+            <div class="scaled-preview-section">
+              <h5>📐 Bản Xem Trước Tỷ Lệ (100x150):</h5>
+              <canvas #scaledCanvas class="scaled-canvas"></canvas>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Quick Capture Card - New Stream -->
+    <div class="quick-capture-column">
+      <ion-card *ngIf="connectedDevice">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="flash" color="warning"></ion-icon>
+            Chụp Nhanh Vân Tay
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Quick Capture Button -->
+          <div class="quick-capture-button-section">
+            <ion-button
+              expand="block"
+              size="large"
+              color="danger"
+              (click)="quickCaptureFingerprint()"
+              [disabled]="quickCaptureLoading"
+            >
+              <ion-icon name="finger-print" slot="start"></ion-icon>
+              {{ quickCaptureLoading ? 'Đang chụp...' : 'CHỤP VÂN TAY' }}
+            </ion-button>
+          </div>
+
+          <!-- Loading Indicator -->
+          <div *ngIf="quickCaptureLoading" class="quick-loading-section">
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+            <p class="loading-text">{{ quickCaptureMessage }}</p>
+            <div class="elapsed-time">{{ quickCaptureElapsedTime }}s</div>
+          </div>
+
+          <!-- Quick Capture Result - Always Visible -->
+          <div *ngIf="quickCaptureResult" class="quick-result-section">
+            <!-- Status -->
+            <ion-item lines="none">
+              <ion-label>
+                <h3>Trạng thái</h3>
+                <p [class]="quickCaptureResult.success ? 'success-text' : 'error-text'">
+                  <ion-icon
+                    [name]="quickCaptureResult.success ? 'checkmark-circle' : 'close-circle'"
+                    [color]="quickCaptureResult.success ? 'success' : 'danger'"
+                  >
+                  </ion-icon>
+                  {{ quickCaptureResult.success ? 'Thành công ✓' : 'Thất bại ✗' }}
+                </p>
+              </ion-label>
+            </ion-item>
+
+            <!-- Message -->
+            <ion-item lines="none" *ngIf="quickCaptureResult.message">
+              <ion-label>
+                <h3>Thông báo</h3>
+                <p>{{ quickCaptureResult.message }}</p>
+              </ion-label>
+            </ion-item>
+
+            <!-- Image Size -->
+            <ion-item lines="none" *ngIf="quickCaptureResult.width && quickCaptureResult.height">
+              <ion-label>
+                <h3>Kích thước</h3>
+                <p>{{ quickCaptureResult.width }} x {{ quickCaptureResult.height }} px</p>
+              </ion-label>
+            </ion-item>
+
+            <!-- Fingerprint Image Preview - Always Shown -->
+            <div *ngIf="quickCaptureResult.pngBase64" class="quick-image-preview">
+              <h4>Hình ảnh vân tay</h4>
+              <img
+                [src]="'data:image/png;base64,' + quickCaptureResult.pngBase64"
+                alt="Quick Fingerprint Image"
+                class="quick-fingerprint-image"
+              />
+              <p class="image-info" *ngIf="quickCaptureResult">Hình ảnh vân tay được chụp</p>
+            </div>
+
+            <!-- No Image Message -->
+            <div *ngIf="!quickCaptureResult.pngBase64 && !quickCaptureResult.success" class="no-image-message">
+              <p>Không có dữ liệu hình ảnh</p>
+            </div>
+
+            <!-- Clear Button -->
+            <ion-button
+              expand="block"
+              fill="outline"
+              color="medium"
+              (click)="clearQuickCaptureResult()"
+              class="clear-button"
+            >
+              <ion-icon name="trash" slot="start"></ion-icon>
+              Xóa kết quả
+            </ion-button>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!quickCaptureResult && !quickCaptureLoading" class="quick-empty-state">
+            <ion-icon name="image-outline" color="medium"></ion-icon>
+            <p>Bấm nút "CHỤP VÂN TAY" để bắt đầu</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Not Connected Message -->
+      <ion-card *ngIf="!connectedDevice">
+        <ion-card-content class="center-content">
+          <ion-icon name="bluetooth-outline" color="medium" size="large"></ion-icon>
+          <p>Vui lòng kết nối thiết bị trước</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

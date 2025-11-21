@@ -1,0 +1,13 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "secugen-demo",
+	"webDir": "www",
+	"packageClassList": [
+		"AppPlugin",
+		"ClipboardPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"StatusBarPlugin",
+		"SecuGenFingerprint"
+	]
+}
